@@ -13,3 +13,9 @@ python -m http.server 8000
 Abre <http://localhost:8000>. La aplicación consulta `/posts`, `/users` y `/comments`, y crea publicaciones mediante `POST /posts`. JSONPlaceholder devuelve una respuesta simulada: no guarda los cambios permanentemente.
 
 El service worker precarga la interfaz y conserva en caché las respuestas de la API para que el contenido consultado siga disponible sin conexión.
+
+## Publicación en GitHub Pages
+
+Cada cambio que se suba a `main` se publica automáticamente con GitHub Actions. Cuando termine correctamente el flujo **Deploy to GitHub Pages**, la aplicación estará disponible en <https://cielo201356.github.io/pagina_web_progesiva/>.
+
+Si Pages aún no está habilitado en el repositorio, en **Settings → Pages → Build and deployment** selecciona **GitHub Actions** como origen de publicación.
