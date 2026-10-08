@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f7f6f2">
+    <meta name="description" content="Explora historias, descubre autores y comparte ideas en una biblioteca de publicaciones.">
+    <title>Cuaderno — historias para explorar</title>
+    <link rel="icon" href="./icon.svg" type="image/svg+xml">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Cuaderno, inicio">
+        <span class="brand-mark" aria-hidden="true">c.</span>
+        <span>cuaderno<span class="brand-period">.</span></span>
+      </a>
+      <div class="topbar-actions">
+        <span class="api-badge"><span class="status-dot"></span> Conectado a JSONPlaceholder</span>
+        <button class="button button-dark install-button" id="install-button" type="button" hidden>Instalar app</button>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-line"></span> UNA BIBLIOTECA ABIERTA</p>
+          <h1 id="page-title">Ideas que merecen<br>un <span>momento.</span></h1>
+          <p class="hero-description">Un espacio para leer sin prisa, descubrir nuevas voces y compartir lo que tienes en mente.</p>
+          <button class="button button-accent hero-cta" id="open-create" type="button">
+            Escribir una historia <span aria-hidden="true">↗</span>
+          </button>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="art-sun"></div>
+          <div class="art-card art-card-back"></div>
+          <div class="art-card art-card-front">
+            <span class="art-kicker">NOTAS DE HOY</span>
+            <span class="art-rule"></span>
+            <span class="art-title">Las buenas<br>ideas también<br>necesitan aire.</span>
+            <span class="art-signature">— alguien, alguna vez</span>
+          </div>
+          <span class="art-spark art-spark-one">✳</span>
+          <span class="art-spark art-spark-two">✳</span>
+          <span class="art-orbit"></span>
+        </div>
+      </section>
+
+      <section class="stats" aria-label="Estadísticas de la biblioteca">
+        <div class="stat"><span class="stat-number" id="stat-posts">—</span><span class="stat-label">historias</span></div>
+        <span class="stat-divider" aria-hidden="true"></span>
+        <div class="stat"><span class="stat-number" id="stat-authors">—</span><span class="stat-label">autores</span></div>
+        <span class="stat-divider" aria-hidden="true"></span>
+        <div class="stat"><span class="stat-number" id="stat-comments">—</span><span class="stat-label">comentarios</span></div>
+        <p class="stats-note">Pequeñas ideas, grandes conversaciones.</p>
+      </section>
+
+      <section class="library" aria-labelledby="library-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow"><span class="eyebrow-line"></span> EL RINCÓN DE LECTURA</p>
+            <h2 id="library-title">Historias recientes<span class="heading-period">.</span></h2>
+          </div>
+          <button class="button button-outline refresh-button" id="refresh-button" type="button" aria-label="Actualizar historias">
+            <span aria-hidden="true">↻</span> Actualizar
+          </button>
+        </div>
+
+        <div class="toolbar">
+          <label class="search-box">
+            <span class="search-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Buscar historias</span>
+            <input id="search-input" type="search" placeholder="Busca una idea, una palabra..." autocomplete="off">
+            <kbd>⌘ K</kbd>
+          </label>
+          <label class="filter-box">
+            <span class="visually-hidden">Filtrar por autor</span>
+            <select id="author-filter">
+              <option value="">Todos los autores</option>
+            </select>
+            <span class="select-chevron" aria-hidden="true">⌄</span>
+          </label>
+        </div>
+
+        <div class="results-meta">
+          <p id="results-count" aria-live="polite">Cargando historias...</p>
+          <p class="offline-note" id="connection-note" hidden><span class="status-dot"></span> Mostrando contenido guardado sin conexión</p>
+        </div>
+
+        <div class="post-grid" id="post-grid" aria-live="polite" aria-busy="true"></div>
+        <p class="empty-state" id="empty-state" hidden>No encontramos historias con esos filtros. Prueba con otra búsqueda.</p>
+        <div class="error-state" id="error-state" hidden role="alert">
+          <p>No se pudieron cargar las historias.</p>
+          <button class="button button-outline" id="retry-button" type="button">Volver a intentar</button>
+        </div>
+        <nav class="pagination" id="pagination" aria-label="Paginación de historias"></nav>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <a class="brand footer-brand" href="./" aria-label="Cuaderno, inicio">
+        <span class="brand-mark" aria-hidden="true">c.</span>
+        <span>cuaderno<span class="brand-period">.</span></span>
+      </a>
+      <p>Hecho para leer con calma. <span>© <span id="current-year"></span></span></p>
+      <span class="footer-api">Datos de <a href="https://jsonplaceholder.typicode.com/" target="_blank" rel="noreferrer">JSONPlaceholder</a></span>
+    </footer>
+
+    <dialog class="dialog" id="post-dialog" aria-labelledby="dialog-title">
+      <form class="dialog-panel" id="create-form">
+        <div class="dialog-header">
+          <div>
+            <p class="eyebrow"><span class="eyebrow-line"></span> UNA PÁGINA EN BLANCO</p>
+            <h2 id="dialog-title">Tu próxima idea<span class="heading-period">.</span></h2>
+          </div>
+          <button class="icon-button" type="button" data-close-dialog aria-label="Cerrar">×</button>
+        </div>
+        <label class="field-label" for="post-title">Título</label>
+        <input class="text-field" id="post-title" name="title" maxlength="100" placeholder="Dale un nombre a tu historia" required>
+        <label class="field-label" for="post-body">Tu historia</label>
+        <textarea class="text-field text-area" id="post-body" name="body" maxlength="1000" rows="6" placeholder="A veces todo comienza con una idea..." required></textarea>
+        <label class="field-label" for="post-author">Publicar como</label>
+        <select class="text-field" id="post-author" name="userId" required></select>
+        <p class="form-note">Las publicaciones de JSONPlaceholder son demostraciones y no se guardan permanentemente.</p>
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+        <button class="button button-accent submit-button" id="submit-post" type="submit">Compartir historia <span aria-hidden="true">↗</span></button>
+      </form>
+    </dialog>
+
+    <dialog class="dialog" id="detail-dialog" aria-labelledby="detail-title">
+      <article class="dialog-panel detail-panel">
+        <div class="dialog-header">
+          <p class="eyebrow"><span class="eyebrow-line"></span> UNA HISTORIA PARA TI</p>
+          <button class="icon-button" type="button" data-close-dialog aria-label="Cerrar">×</button>
+        </div>
+        <div id="detail-content"></div>
+      </article>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
