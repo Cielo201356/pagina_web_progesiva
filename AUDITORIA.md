@@ -1,6 +1,4 @@
-# Auditoría técnica de Cuaderno
-
-## Título
+# Título
 
 **Auditoría funcional, técnica y de experiencia de usuario de la aplicación web progresiva Cuaderno**
 
@@ -10,19 +8,9 @@
 
 **Sitio evaluado:** <https://cielo201356.github.io/pagina_web_progesiva/>
 
-## Objetivo general
+---
 
-Evaluar el funcionamiento y la calidad técnica de Cuaderno, una aplicación web progresiva que consume JSONPlaceholder, para identificar fortalezas, riesgos y mejoras que ayuden a mantener una experiencia segura, accesible y confiable.
-
-## Objetivos específicos
-
-1. Comprobar que la aplicación publicada carga y presenta publicaciones, autores y comentarios desde JSONPlaceholder.
-2. Revisar las interacciones principales: búsqueda, filtro, paginación, consulta de comentarios y envío de una publicación.
-3. Examinar el manifiesto y el service worker, incluida la estrategia de caché y el funcionamiento sin conexión.
-4. Revisar prácticas de seguridad visibles en el manejo y presentación de los datos recibidos.
-5. Identificar limitaciones y proponer medidas concretas para los hallazgos observados.
-
-## Resumen
+# Resumen
 
 Se realizó una revisión del código fuente y una prueba funcional del sitio desplegado en GitHub Pages. La aplicación cargó correctamente **100 publicaciones, 10 autores y 500 comentarios**. Se verificaron la búsqueda, el filtro por autor, la lectura de comentarios, la creación de una publicación de demostración y la carga de contenido previamente almacenado cuando no hay conexión.
 
@@ -30,13 +18,25 @@ La revisión encontró **un hallazgo de prioridad media** en el service worker: 
 
 No se observó una vulnerabilidad crítica o alta en el alcance revisado. La aplicación escapa los textos recibidos antes de insertarlos en el HTML y comunica que las publicaciones creadas con JSONPlaceholder son simuladas y no persisten. Esta revisión no equivale a una prueba de penetración ni a una certificación completa de accesibilidad.
 
-## Introducción
+# Introducción
 
 Cuaderno es una aplicación estática en español que presenta contenido de JSONPlaceholder. Utiliza las rutas `/posts`, `/users` y `/comments`, permite explorar publicaciones y enviar nuevas entradas mediante `POST /posts`. Un manifiesto describe la experiencia instalable y un service worker almacena los recursos de la interfaz y las respuestas de la API.
 
 JSONPlaceholder es un servicio de demostración: simula las respuestas de escritura, pero no conserva las publicaciones creadas. Esta característica está informada en la interfaz y en la documentación del proyecto. La auditoría se enfoca en el comportamiento observable, el código entregado y las limitaciones propias de este servicio de prueba.
 
-## Metodología
+## Objetivo General
+
+Evaluar el funcionamiento y la calidad técnica de Cuaderno, una aplicación web progresiva que consume JSONPlaceholder, para identificar fortalezas, riesgos y mejoras que ayuden a mantener una experiencia segura, accesible y confiable.
+
+## Objetivos Específicos
+
+1. Comprobar que la aplicación publicada carga y presenta publicaciones, autores y comentarios desde JSONPlaceholder.
+2. Revisar las interacciones principales: búsqueda, filtro, paginación, consulta de comentarios y envío de una publicación.
+3. Examinar el manifiesto y el service worker, incluida la estrategia de caché y el funcionamiento sin conexión.
+4. Revisar prácticas de seguridad visibles en el manejo y presentación de los datos recibidos.
+5. Identificar limitaciones y proponer medidas concretas para los hallazgos observados.
+
+# Metodología
 
 La revisión se llevó a cabo el 7 de octubre de 2026 con las siguientes actividades:
 
@@ -50,7 +50,7 @@ La revisión se llevó a cabo el 7 de octubre de 2026 con las siguientes activid
 
 La revisión fue manual y exploratoria. No se ejecutaron escáneres de vulnerabilidades, una prueba de carga, una matriz completa entre navegadores/dispositivos ni una evaluación formal WCAG.
 
-## Resultados
+# Resultados
 
 ### Funcionalidad comprobada
 
@@ -94,13 +94,13 @@ La revisión fue manual y exploratoria. No se ejecutaron escáneres de vulnerabi
 - La estrategia sin conexión depende de haber cargado previamente la interfaz y los datos mientras había conexión; no representa almacenamiento permanente del contenido creado.
 - El informe no encontró defectos en las interacciones probadas; las conclusiones se limitan a las rutas y condiciones ensayadas.
 
-## Conclusiones
+# Conclusiones
 
 Cuaderno cumple el objetivo de ofrecer una interfaz estática, funcional y conectada a JSONPlaceholder. Las funciones principales se ejecutaron correctamente tanto en el sitio publicado como en las pruebas de disponibilidad sin conexión. El contenido se muestra de forma segura respecto de los campos de texto revisados y las limitaciones de persistencia de la API están comunicadas con claridad.
 
 La mejora prioritaria es acotar la eliminación de cachés del service worker a las cachés que pertenecen a Cuaderno. Luego se recomienda tratar las respuestas de servidor no exitosas como una oportunidad para mostrar datos previamente guardados. Antes de considerar el proyecto plenamente verificado para producción, convendría ejecutar pruebas automatizadas de regresión y una evaluación de accesibilidad con tecnologías de asistencia y navegadores adicionales.
 
-## Bibliografía
+# Bibliografía
 
 1. JSONPlaceholder. “Guide”. <https://jsonplaceholder.typicode.com/guide/>. Consultado el 7 de octubre de 2026.
 2. Mozilla Developer Network (MDN). “Service Worker API”. <https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API>. Consultado el 7 de octubre de 2026.
