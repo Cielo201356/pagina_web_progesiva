@@ -1,8 +1,10 @@
 const API_BASE = "https://jsonplaceholder.typicode.com";
 const PAGE_SIZE = 9;
+const LOCAL_POSTS_KEY = "cuaderno-local-posts-v1";
 
 const state = {
   posts: [],
+  localPosts: [],
   users: [],
   comments: [],
   page: 1,
@@ -47,6 +49,25 @@ function getAuthor(userId) {
   return state.users.find((user) => user.id === userId);
 }
 
+function readLocalPosts() {
+  const savedPosts = localStorage.getItem(LOCAL_POSTS_KEY);
+  if (!savedPosts) return [];
+
+  const parsedPosts = JSON.parse(savedPosts);
+  if (!Array.isArray(parsedPosts) || parsedPosts.some((post) =>
+    !post || !Number.isInteger(post.id) || post.id >= 0 ||
+    typeof post.title !== "string" || typeof post.body !== "string" ||
+    !Number.isInteger(post.userId)
+  )) {
+    throw new Error("El formato de las historias guardadas no es válido.");
+  }
+  return parsedPosts;
+}
+
+function saveLocalPosts(posts) {
+  localStorage.setItem(LOCAL_POSTS_KEY, JSON.stringify(posts));
+}
+
 async function requestJson(path, options = {}) {
   const response = await fetch(`${API_BASE}${path}`, options);
   if (!response.ok) {
@@ -74,12 +95,19 @@ async function loadLibrary() {
       requestJson("/comments")
     ]);
 
-    state.posts = posts;
+    try {
+      state.localPosts = readLocalPosts();
+    } catch (error) {
+      state.localPosts = [];
+      console.error("No se pudieron recuperar las historias guardadas en este navegador:", error);
+      showToast("No se pudieron recuperar tus historias guardadas en este navegador.");
+    }
+    state.posts = [...state.localPosts, ...posts];
     state.users = users;
     state.comments = comments;
     elements.connectionNote.hidden = !state.readFromOfflineCache;
     populateAuthors();
-    document.querySelector("#stat-posts").textContent = String(posts.length);
+    document.querySelector("#stat-posts").textContent = String(state.posts.length);
     document.querySelector("#stat-authors").textContent = String(users.length);
     document.querySelector("#stat-comments").textContent = String(comments.length);
     renderPosts();
@@ -229,12 +257,18 @@ async function submitPost(event) {
   };
 
   try {
-    const createdPost = await requestJson("/posts", {
+    await requestJson("/posts", {
       method: "POST",
       headers: { "Content-Type": "application/json; charset=UTF-8" },
       body: JSON.stringify(draft)
     });
-    state.posts.unshift({ ...draft, ...createdPost });
+    const localId = Math.min(0, ...state.localPosts.map((post) => post.id)) - 1;
+    const savedPost = { ...draft, id: localId };
+    const updatedLocalPosts = [savedPost, ...state.localPosts];
+    saveLocalPosts(updatedLocalPosts);
+    state.localPosts = updatedLocalPosts;
+    state.posts = [...state.localPosts, ...state.posts.filter((post) => post.id >= 0)];
+    document.querySelector("#stat-posts").textContent = String(state.posts.length);
     state.page = 1;
     state.search = "";
     state.authorId = "";
@@ -243,9 +277,9 @@ async function submitPost(event) {
     elements.createForm.reset();
     elements.postDialog.close();
     renderPosts();
-    showToast("Tu historia está lista. Recuerda: la API de prueba no la guarda permanentemente.");
+    showToast("Tu historia se guardó en este navegador. No se sincroniza con otros dispositivos.");
   } catch (error) {
-    elements.formError.textContent = `No se pudo compartir la historia. ${error.message}`;
+    elements.formError.textContent = `No se pudo guardar la historia. ${error.message}`;
     elements.formError.hidden = false;
     console.error("Error al crear la publicación:", error);
   } finally {

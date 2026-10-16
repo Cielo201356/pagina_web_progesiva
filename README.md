@@ -10,7 +10,7 @@ El service worker y la instalación requieren `localhost` o HTTPS. Desde esta ca
 python -m http.server 8000
 ```
 
-Abre <http://localhost:8000>. La aplicación consulta `/posts`, `/users` y `/comments`, y crea publicaciones mediante `POST /posts`. JSONPlaceholder devuelve una respuesta simulada: no guarda los cambios permanentemente.
+Abre <http://localhost:8000>. La aplicación consulta `/posts`, `/users` y `/comments`, y crea publicaciones mediante `POST /posts`. JSONPlaceholder devuelve una respuesta simulada y no guarda los cambios permanentemente. Para que las historias creadas no desaparezcan al recargar, Cuaderno también las guarda en el almacenamiento local del navegador. Estas historias solo están disponibles en ese navegador y dispositivo; borrar los datos del sitio las elimina.
 
 El service worker precarga la interfaz y conserva en caché las respuestas de la API para que el contenido consultado siga disponible sin conexión.
 

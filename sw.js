@@ -1,5 +1,6 @@
-const STATIC_CACHE = "cuaderno-static-v1";
-const API_CACHE = "cuaderno-api-v1";
+const CACHE_VERSION = "v2";
+const STATIC_CACHE = `cuaderno-static-${CACHE_VERSION}`;
+const API_CACHE = `cuaderno-api-${CACHE_VERSION}`;
 const API_ORIGIN = "https://jsonplaceholder.typicode.com";
 const APP_FILES = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.webmanifest", "./icon.svg"];
 
@@ -14,9 +15,14 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(
-        keys.filter((key) => ![STATIC_CACHE, API_CACHE].includes(key)).map((key) => caches.delete(key))
-      ))
+      .then((keys) => {
+        const appKeys = keys.filter((key) => key.startsWith("cuaderno-static-") || key.startsWith("cuaderno-api-"));
+        return Promise.all(
+          appKeys
+            .filter((key) => key !== STATIC_CACHE && key !== API_CACHE)
+            .map((key) => caches.delete(key))
+        );
+      })
       .then(() => self.clients.claim())
   );
 });
@@ -36,12 +42,38 @@ self.addEventListener("fetch", (event) => {
   }
 });
 
+function respondWithCachedFallback(cache, request, response) {
+  if (!response || response.ok) return response;
+
+  return cache.match(request).then((cachedResponse) => {
+    if (!cachedResponse) return response;
+
+    const headers = new Headers(cachedResponse.headers);
+    headers.set("X-Cuaderno-Offline", "true");
+    return new Response(cachedResponse.body, {
+      status: cachedResponse.status,
+      statusText: cachedResponse.statusText,
+      headers
+    });
+  });
+}
+
 async function networkFirstApi(request) {
   const cache = await caches.open(API_CACHE);
-  let response;
 
   try {
-    response = await fetch(request);
+    const response = await fetch(request);
+
+    if (response.ok) {
+      try {
+        await cache.put(request, response.clone());
+      } catch (error) {
+        console.error("No se pudo guardar la respuesta de la API en caché:", error);
+      }
+      return response;
+    }
+
+    return respondWithCachedFallback(cache, request, response);
   } catch (error) {
     const cachedResponse = await cache.match(request);
     if (cachedResponse) {
@@ -55,15 +87,6 @@ async function networkFirstApi(request) {
     }
     throw error;
   }
-
-  if (response.ok) {
-    try {
-      await cache.put(request, response.clone());
-    } catch (error) {
-      console.error("No se pudo guardar la respuesta de la API en caché:", error);
-    }
-  }
-  return response;
 }
 
 async function cacheFirstApp(request) {
