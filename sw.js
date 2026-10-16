@@ -1,6 +1,5 @@
-const CACHE_VERSION = "v2";
-const STATIC_CACHE = `cuaderno-static-${CACHE_VERSION}`;
-const API_CACHE = `cuaderno-api-${CACHE_VERSION}`;
+const STATIC_CACHE = "cuaderno-static-v3";
+const API_CACHE = "cuaderno-api-v2";
 const API_ORIGIN = "https://jsonplaceholder.typicode.com";
 const APP_FILES = ["./", "./index.html", "./styles.css", "./app.js", "./manifest.webmanifest", "./icon.svg"];
 

@@ -243,11 +243,11 @@ function showToast(message) {
   state.toastTimer = window.setTimeout(() => elements.toast.classList.remove("is-visible"), 3500);
 }
 
-async function submitPost(event) {
+function submitPost(event) {
   event.preventDefault();
   elements.formError.hidden = true;
   elements.submitPost.disabled = true;
-  elements.submitPost.textContent = "Compartiendo...";
+  elements.submitPost.textContent = "Guardando...";
 
   const formData = new FormData(elements.createForm);
   const draft = {
@@ -257,11 +257,6 @@ async function submitPost(event) {
   };
 
   try {
-    await requestJson("/posts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json; charset=UTF-8" },
-      body: JSON.stringify(draft)
-    });
     const localId = Math.min(0, ...state.localPosts.map((post) => post.id)) - 1;
     const savedPost = { ...draft, id: localId };
     const updatedLocalPosts = [savedPost, ...state.localPosts];
@@ -277,7 +272,7 @@ async function submitPost(event) {
     elements.createForm.reset();
     elements.postDialog.close();
     renderPosts();
-    showToast("Tu historia se guardó en este navegador. No se sincroniza con otros dispositivos.");
+    showToast("Historia guardada en este navegador, incluso sin conexión.");
   } catch (error) {
     elements.formError.textContent = `No se pudo guardar la historia. ${error.message}`;
     elements.formError.hidden = false;
